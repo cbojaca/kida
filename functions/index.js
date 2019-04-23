@@ -18,7 +18,10 @@ admin.initializeApp(functions.config().firebase);
 
         db.collection("daycares").doc(newUser.DaycareId).set({
             users: {
-                [context.params.userId]: newUser.FullName
+                [context.params.userId]: {
+                    FullName: newUser.FullName,
+                    Role: newUser.Role
+                }
             }
         }, { merge: true })
             .then(() => {

@@ -9,7 +9,7 @@
             v-model="password"
             :append-icon="showPassword ? 'visibility' : 'visibility_off'"
             :type="showPassword ? 'text' : 'password'"
-            name="input-10-1"
+            name="input-10-1" @keyup.enter="handleSubmit()"
             label="Password"
             @click:append="showPassword = !showPassword"
           ></v-text-field>

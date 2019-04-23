@@ -11,25 +11,19 @@
       <v-list>
         <v-list-tile avatar :to="{name: 'userprofile'}">
           <v-list-tile-avatar color="teal">
-            <span
-              v-if="!userProfile.ImageUrl"
-              class="white--text headline"
-            >{{userProfile.FullName.substring(0,2).toUpperCase()}}</span>
-            <img
-              v-if="userProfile.ImageUrl"
-              src="https://cdn.vuetifyjs.com/images/john.jpg"
-              alt="John"
-            >
+            <span v-if="!userProfile.ImageUrl" class="white--text headline">{{userProfile.FullName | userInitials}}</span>
+            <img v-if="userProfile.ImageUrl" src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John">
           </v-list-tile-avatar>
 
           <v-list-tile-content>
             <v-list-tile-title>{{userProfile.FullName}}</v-list-tile-title>
-            <v-list-tile-sub-title>Founder of Vuetify.js</v-list-tile-sub-title>
+            <v-list-tile-sub-title>{{currentDaycare.Name}}</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
 
       <v-divider></v-divider>
+
 
       <v-list>
         <v-list-tile :to="{name: 'dashboard'}">
@@ -41,12 +35,21 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile :to="{name: 'users'}">
+        <v-list-tile :to="{name: 'users'}" v-show="userProfile.Role == Roles.Admin">
           <v-list-tile-action>
             <v-icon>account_circle</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>Users</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+         <v-list-tile :to="{name: 'groups'}" v-show="userProfile.Role == Roles.Admin">
+          <v-list-tile-action>
+            <v-icon>group_work</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Groups</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -94,6 +97,8 @@
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
 import router from "../../router/router";
+import { Role } from "../../_helpers/role"
+import { debug } from 'util';
 const fb = require("../../firebaseConfig.js");
 
 export default {
@@ -123,7 +128,8 @@ export default {
       fixed: true,
       // sets if the footer is full width (true) or gives space to the drawer (false)
       clippedLeft: true
-    }
+    },
+    Roles: Role
   }),
   props: {
     source: String
@@ -132,7 +138,13 @@ export default {
     this.loadUser();
   },
   computed: {
-    ...mapState("account", ["userProfile"])
+    ...mapState("account", ["userProfile"]),
+    ...mapState("daycares", ["currentDaycare"])
+  },
+  filters: {
+    userInitials: function(value) {
+      return value ? value.substring(0,2).toUpperCase() : '';
+    }
   },
   methods: {
     ...mapMutations("account", ["setCurrentUser"]),

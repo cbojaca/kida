@@ -1,6 +1,10 @@
 import Vue from "vue";
 import Vuetify from "vuetify/lib";
 import "vuetify/src/stylus/app.styl";
+import VueRandomColor from 'vue-randomcolor'
+
+Vue.use(VueRandomColor);
+//var randomColor = require('randomcolor');
 
 Vue.use(Vuetify, {
   iconfont: "md",
@@ -12,5 +16,6 @@ Vue.use(Vuetify, {
     info: "#2196F3",
     success: "#4CAF50",
     warning: "#FFC107"
+    //random: randomColor()
   }
 });

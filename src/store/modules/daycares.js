@@ -20,23 +20,21 @@ const actions = {
 
 	},
 
-	addUserToDaycare({ commit }, user) {
-		fb.daycaresCollection
-			.doc(user.DaycareId)
-			.set(
-				{
-					users: {
-						[user.uid]: user.FullName
-					}
-				},
-				{ merge: true }
-			)
-			.then(() => {
-				dispatch("alert/success", "User Succesfully Added", { root: true });
-			})
-			.catch(err => {
-				dispatch("alert/error", err, { root: true });
-			});
+	addUserToDaycare({ commit, dispatch }, user) {
+		fb.daycaresCollection.doc(user.DaycareId).set({
+			users: {
+                [user.uid]: {
+                    FullName: user.fullName,
+                    Role: user.userRole
+                }
+            }
+		}, { merge: true })
+		.then(() => {
+			dispatch("alert/success", "User Succesfully Added", { root: true });
+		})
+		.catch(err => {
+			dispatch("alert/error", err, { root: true });
+		});
 	},
 
 	delete({ commit }, id) {
@@ -74,19 +72,19 @@ const mutations = {
 		// remove deleted user from state
 		state.all.items = state.all.items.filter(user => user.id !== id);
 	},
-  /* deleteFailure(state, { id, error }) {
-    // remove 'deleting:true' property and add 'deleteError:[error]' property to user
-    state.all.items = state.items.map(user => {
-      if (user.id === id) {
-        // make copy of user without 'deleting:true' property
-        const { deleting, ...userCopy } = user;
-        // return copy of user with 'deleteError:[error]' property
-        return { ...userCopy, deleteError: error };
-      }
-
-      return user;
-    });
-  } */
+	/* deleteFailure(state, { id, error }) {
+	  // remove 'deleting:true' property and add 'deleteError:[error]' property to user
+	  state.all.items = state.items.map(user => {
+		if (user.id === id) {
+		  // make copy of user without 'deleting:true' property
+		  const { deleting, ...userCopy } = user;
+		  // return copy of user with 'deleteError:[error]' property
+		  return { ...userCopy, deleteError: error };
+		}
+  
+		return user;
+	  });
+	} */
 };
 
 export const daycares = {

@@ -58,7 +58,7 @@ const router = new Router({
           name: "users",
           path: "users",
           meta: {
-            authorize: [Role.Admin, Role.Parent, Role.Teacher],
+            authorize: [Role.Admin],
             requiresAuth: true
           },
           component: () =>
@@ -73,6 +73,16 @@ const router = new Router({
           },
           component: () =>
             import(/* webpackChunkName: "group-foo" */ "../components/admin/userprofile/UserProfile.vue")
+        },
+        {
+          name: "groups",
+          path: "groups",
+          meta: {
+            authorize: [Role.Admin, Role.Teacher],
+            requiresAuth: true
+          },
+          component: () =>
+            import(/* webpackChunkName: "group-foo" */ "../components/admin/groups/Groups.vue")
         }
       ]
     }

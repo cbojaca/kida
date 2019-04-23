@@ -1,5 +1,3 @@
-import { userService } from "../../services/user";
-
 const state = {
   allUsersByDaycare: [],
   allChildrensByUser: []

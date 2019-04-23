@@ -1,4 +1,3 @@
-import { userService } from "../../services/user";
 import { adminManager } from "../../firebaseConfig";
 const fb = require("../../firebaseConfig");
 
