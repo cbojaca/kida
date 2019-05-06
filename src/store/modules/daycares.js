@@ -1,6 +1,8 @@
 const fb = require("../../firebaseConfig");
+import firebase from "firebase";
 
 const state = {
+	currenyDayCareId: '',
 	currentDaycare: {},
 	allChildrensByDaycare: [],
 	allUsersByDaycare: []
@@ -10,36 +12,47 @@ const actions = {
 	getUserDaycare({ commit }, daycareId) {
 		fb.daycaresCollection.doc(daycareId).get().then(function (doc) {
 			if (doc.exists) {
-				commit('setUserDaycare', doc.data());
+				commit('setUserDaycare', doc);
 			} else {
 				console.log("No such document!");
 			}
 		}).catch(function (error) {
 			dispatch("alert/error", error, { root: true });
 		});
+	},
 
+	deleteUserFromDaycare({ commit }, userId) {		
+		fb.daycaresCollection.doc(state.currenyDayCareId).set({
+			users: {
+				[userId]: firebase.firestore.FieldValue.delete()
+			}
+		}, { merge: true }).then(function() {
+				console.log("Document successfully deleted!");
+			}).catch(function(error) {
+					console.error("Error removing document: ", error);
+			});
 	},
 
 	addUserToDaycare({ commit, dispatch }, user) {
 		fb.daycaresCollection.doc(user.DaycareId).set({
 			users: {
-                [user.uid]: {
-                    FullName: user.fullName,
-                    Role: user.userRole
-                }
-            }
+				[user.uid]: {
+					FullName: user.fullName,
+					Role: user.userRole
+				}
+			}
 		}, { merge: true })
-		.then(() => {
-			dispatch("alert/success", "User Succesfully Added", { root: true });
-		})
-		.catch(err => {
-			dispatch("alert/error", err, { root: true });
-		});
+			.then(() => {
+				commit("setNewUserOnDayCare", user);
+				dispatch("alert/success", "User Succesfully Added", { root: true });
+			})
+			.catch(err => {
+				dispatch("alert/error", err, { root: true });
+			});
 	},
 
 	delete({ commit }, id) {
 		commit("deleteRequest", id);
-
 		userService
 			.delete(id)
 			.then(
@@ -50,8 +63,15 @@ const actions = {
 };
 
 const mutations = {
+	setNewUserOnDayCare(state, val) {
+		state.currentDaycare.users[val.uid] = {
+			FullName: val.fullName,
+			Role: val.userRole
+		};
+	},
 	setUserDaycare(state, val) {
-		state.currentDaycare = val;
+		state.currenyDayCareId = val.id;
+		state.currentDaycare = val.data();
 	},
 	getAllRequest(state) {
 		state.all = { loading: true };

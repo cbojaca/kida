@@ -1,3 +1,6 @@
+import { adminManager } from "../../firebaseConfig";
+const fb = require("../../firebaseConfig");
+
 const state = {
   allUsersByDaycare: [],
   allChildrensByUser: []
@@ -15,15 +18,13 @@ const actions = {
       );
   },
 
-  delete({ commit }, id) {
-    commit("deleteRequest", id);
-
-    userService
-      .delete(id)
-      .then(
-        user => commit("deleteSuccess", id),
-        error => commit("deleteSuccess", { id, error: error.toString() })
-      );
+  deleteUser({ commit, dispatch }, userId ) {
+    fb.usersCollection.doc(userId).delete().then(function () {
+      user => commit("deleteSuccess", userId);
+      dispatch("daycares/deleteUserFromDaycare", userId, { root: true });
+    }).catch(function (error) {
+      error => commit("deleteFailure", { id, error: error.toString() })
+    });
   }
 };
 

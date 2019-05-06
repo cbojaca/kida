@@ -21,7 +21,6 @@ const actions = {
         dispatch("alert/error", err, { root: true });
       });
   },
-
   fetchUserProfile({ commit, dispatch, state }) {
     fb.usersCollection
       .doc(state.currentUser.uid)
@@ -34,7 +33,6 @@ const actions = {
         throw err;
       });
   },
-
   createUser({ dispatch }, newUser) {
     newUser.DaycareId = state.userProfile.DaycareId;
     adminManager
@@ -44,8 +42,7 @@ const actions = {
         newUser.uid = user.user.uid;
         dispatch("createDBUser", newUser);
       });
-  },
-
+  },  
   createDBUser({ dispatch }, newUser) {
     fb.usersCollection
       .doc(newUser.uid)
@@ -62,7 +59,6 @@ const actions = {
         dispatch("alert/error", err, { root: true });
       });
   },
-
   logout({ commit }, { router }) {
     fb.auth
       .signOut()

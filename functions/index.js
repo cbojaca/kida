@@ -9,35 +9,19 @@ admin.initializeApp(functions.config().firebase);
 //  response.send("Hello from Firebase!");
 // });
 
-/* exports.createUser = functions.firestore
+exports.deleteUser = functions.firestore
     .document('users/{userId}')
-    .onCreate((snap, context) => {
+    .onDelete((snap, context) => {
         // Get an object representing the document
         const newUser = snap.data();
         var db = admin.firestore();
 
-        db.collection("daycares").doc(newUser.DaycareId).set({
-            users: {
-                [context.params.userId]: {
-                    FullName: newUser.FullName,
-                    Role: newUser.Role
-                }
-            }
-        }, { merge: true })
-            .then(() => {
-                console.log('Usuario Creado en Guarderia');
-            }).catch(err => {
-                console.log(err);
-            });
+        admin.auth().deleteUser(context.params.userId)
+        .then(function () {
+            console.log('User Successfully Deleted');
+        })
+        .catch(error => {
+            console.log(error);
+        })
 
-        functions.database.ref('daycares/' + newUser.daycareId + '/users').update({
-            userId: newUser.fullName
-        }, { merge: true })
-            .then(() => {
-                console.log('Usuario Creado en Guarderia');
-            }).catch(err => {
-                console.log(err);
-            });
-
-        // perform desired operations ...
-    }); */
+    });

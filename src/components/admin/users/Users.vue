@@ -6,7 +6,7 @@
       </v-flex>
     </v-layout>
     <v-layout align-start row fill-height>
-      <v-flex xs12 sm3 order-md3 order-sm2 pa-2 v-for="user in filteredUsers" :key="user.USerId">
+      <v-flex xs12 sm3 order-md3 order-sm2 pa-2 v-for="user in filteredUsers" :key="user.UserId">
         <v-hover>
           <v-card class="black--text">
             <v-layout>
@@ -36,6 +36,26 @@
               </v-flex>
             </v-layout>
             <v-divider light></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-dialog v-model="dialog" width="500">
+                <template v-slot:activator="{ on }">
+                  <v-btn flat icon color="red" v-on="on">
+                    <v-icon>delete</v-icon>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="headline grey lighten-2" primary-title>Delete User</v-card-title>
+                  <v-card-text>Are you sure you want to delete {{user.FullName}}? </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn round outline color="blue darken-1" flat @click="deleteUserFromApp(user.key)">Yes</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-card-actions>
+            <!--  -->
           </v-card>
         </v-hover>
       </v-flex>
@@ -44,13 +64,16 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import AddUser from "./AddUser";
 
 export default {
   components: {
     AddUser
   },
+  data: () => ({    
+    dialog: false    
+  }),
   computed: {
     ...mapState("daycares", ["currentDaycare"]),
     ...mapState("account", ["currentUser"]),
@@ -60,12 +83,14 @@ export default {
       var result = [];
       if (this.currentDaycare.users) {
         for (var key in this.currentDaycare.users) {
-          if ( this.currentDaycare.users.hasOwnProperty(key) && self.currentUser.uid != [key]) {
-            result.push(this.currentDaycare.users[key]);
+          if (
+            this.currentDaycare.users.hasOwnProperty(key) &&
+            self.currentUser.uid != [key]
+          ) {
+            result.push({key: key, ...this.currentDaycare.users[key]});
           }
         }
       }
-
       return result;
     }
   },
@@ -75,8 +100,12 @@ export default {
     }
   },
   methods: {
+    ...mapActions("users", ["deleteUser"]),
     colorGenerator() {
       return this.$randomColor();
+    },
+    deleteUserFromApp(userKey) {
+      this.deleteUser(userKey);
     }
   }
 };
